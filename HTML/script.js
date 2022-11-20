@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> dev
 function add(){
     var Div = document.getElementById("dd");
     Div.innerHTML += "\nALERT!!";
