@@ -1,8 +1,8 @@
 
 
-function add(){
+function a(){
     var Div = document.getElementById("dd");
     Div.innerHTML += "\n  ALERT!!";
 }
 
-add();
+window.onload = a;
