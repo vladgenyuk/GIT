@@ -71,5 +71,4 @@ int main()
     {
         cout << error << '\n';
     }
-    return 0;
 }
