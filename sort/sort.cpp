@@ -3,7 +3,7 @@
 #include <string> 
 using namespace std;
 
-char criterion = 'b', sort_kind;
+char criterion = 'b', sort_kind = 'M';
 
 struct course{
     string bank;
@@ -20,41 +20,43 @@ bool check(double el){
     return false;
 }
 
-struct course *bubble_sort(struct course *arr, int size){
+bool compare_diff(struct course x, struct course y){
+    if(x.difference > y.difference){
+        return true;
+    }
+    return false;
+}
+
+
+bool compare_buy(struct course x, struct course y){
+    if(x.buy > y.buy){
+        return true;
+    }
+    return false;
+}
+
+struct course *bubble_sort(struct course *arr, int size, bool (*func)(struct course, struct course)){
     struct course *a = new struct course[size];
     a = arr;
     struct course h;
-    if(criterion == 'd'){
-        for(int i = 0; i < size - 1; i ++){
-            for(int j = 0; j < size - 1; j++){
-                if(a[j].difference > a[j+1].difference){
-                    h = a[j];
-                    a[j] = a[j + 1];
-                    a[j + 1] = h;
-                }
-            }
-        }
-    } else {
-        for(int i = 0; i < size - 1; i ++){
-            for(int j = 0; j < size - 1; j++){
-                if(a[j].buy > a[j+1].buy){
-                    h = a[j];
-                    a[j] = a[j + 1];
-                    a[j + 1] = h;
-                }
+    for(int i = 0; i < size - 1; i ++){
+        for(int j = 0; j < size - 1; j++){
+            if(func(a[j], a[j+1])){
+                h = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = h;
             }
         }
     }
     return a;
 }
 
-struct course *merge(struct course *a, struct course *b, int lena, int lenb){
+struct course *merge(struct course *a, struct course *b, int lena, int lenb, bool (*func)(struct course, struct course)){
     struct course *c = new struct course[lena + lenb];
     // print(a, lena);
     int i = 0, k = 0, n = 0;
-    if(criterion == 'd'){
     while(i < lena && k < lenb){
-        if(a[i].difference > b[k].difference){
+        if(func(a[i], b[k])){
             c[n] = a[i];
             i += 1;
             n += 1;
@@ -73,35 +75,11 @@ struct course *merge(struct course *a, struct course *b, int lena, int lenb){
         c[n] = b[k];
         k += 1;
         n += 1;
-    }
-    }
-    if(criterion == 'b'){
-    while(i < lena && k < lenb){
-        if(a[i].buy > b[k].buy){
-            c[n] = a[i];
-            i += 1;
-            n += 1;
-        } else{
-            c[n] = b[k];
-            k += 1;
-            n += 1;
-        }
-    }
-    while(i < lena){
-        c[n] = a[i];
-        i += 1;
-        n += 1;
-    }
-    while(k < lenb){
-        c[n] = b[k];
-        k += 1;
-        n += 1;
-    }
     }
     return c;
 }
 
-struct course *sort(struct course *arr, int len){
+struct course *sort(struct course *arr, int len, bool (*func)(struct course, struct course)){
     if (len <= 1){
         return 0;
     }
@@ -118,10 +96,10 @@ struct course *sort(struct course *arr, int len){
         r[i-lena] = arr[i];
     }
     // print(r, lenb);
-    sort(l, lena);
-    sort(r, lenb);
+    sort(l, lena, func);
+    sort(r, lenb, func);
     struct course *m;
-    m = merge(l, r, lena, lenb);
+    m = merge(l, r, lena, lenb, func);
     for(int i = 0; i < len; i++){
         arr[i] = m[i];
     }
@@ -159,11 +137,22 @@ int main(){
         val_arr[i].address += to_string(i+ rand() % 100) + ".1";
         val_arr[i].difference = val_arr[i].sell - val_arr[i].buy;
     }
+
     if(sort_kind == 'B'){
-        bubble_sort(val_arr, size);
+        if(criterion == 'd'){
+            bubble_sort(val_arr, size, compare_diff);
+        }else{
+            bubble_sort(val_arr, size, compare_buy);
+        }
     } else{
-        sort(val_arr, size);
+        if(criterion == 'd'){
+            sort(val_arr, size, compare_diff);
+        }else{
+            sort(val_arr, size, compare_buy);
+        }
     }
+
+
     for(int i = 0; i < 10; i++){
         cout << val_arr[i].difference << ' ';
     }
@@ -171,14 +160,14 @@ int main(){
     for(int i = 0; i < 10; i++){
         cout << val_arr[i].buy << ' ';
     }
-    cout << '\n';
-    cout << '\n';
+    // cout << '\n';
+    // cout << '\n';
 
-    for(int i = 0; i < 10; i++){
-        if(check(val_arr[i].buy)){
-            cout << val_arr[i].bank << ' ' << val_arr[i].address << ' ' << val_arr[i].buy << ' ' << val_arr[i].sell << ' ' << val_arr[i].difference << '\n';
-        }
-    }
+    // for(int i = 0; i < 10; i++){
+    //     if(check(val_arr[i].buy)){
+    //         cout << val_arr[i].bank << ' ' << val_arr[i].address << ' ' << val_arr[i].buy << ' ' << val_arr[i].sell << ' ' << val_arr[i].difference << '\n';
+    //     }
+    // }
     cout << '\n';
 
 }
